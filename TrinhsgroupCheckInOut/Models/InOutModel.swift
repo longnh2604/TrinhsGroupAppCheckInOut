@@ -11,12 +11,14 @@ class InOutModel: NSObject {
 
     var type : String = ""
     var time: String = ""
-    var documentId: String = ""
+    var username: String = ""
+    var uid: String = ""
   
     override init() { }
     
-    init(documentId: String, type: String, time: String) {
-        self.documentId = documentId
+    init(uid: String, username: String, type: String, time: String) {
+        self.uid = uid
+        self.username = username
         self.type = type
         self.time = time
     }

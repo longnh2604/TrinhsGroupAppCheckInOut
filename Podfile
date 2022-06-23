@@ -23,6 +23,6 @@ target 'TrinhsgroupCheckInOut' do
   pod 'Firebase/Firestore', '~> 8.0'
   pod 'MBProgressHUD'
   pod 'IQKeyboardManagerSwift'
-  pod 'PDFGenerator', '~> 3.1'
+  pod 'SwiftCSVExport' , '= 2.6.0'
 
 end

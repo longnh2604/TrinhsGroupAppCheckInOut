@@ -57,6 +57,14 @@ class Utility {
         formatter.dateFormat = format ?? DateStringFormat.checkInFormat
         return formatter.string(from: date)
     }
+    
+    static func onConvertStringToDate(date: String, format: String?)-> Date {
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en")
+        dateFormatter.timeZone = TimeZone.current
+        dateFormatter.dateFormat = format ?? DateStringFormat.checkInFormat
+        return dateFormatter.date(from: date) ?? Date()
+    }
 }
 
 class LoadingView: UIView {

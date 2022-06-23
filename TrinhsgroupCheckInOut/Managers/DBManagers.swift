@@ -125,9 +125,9 @@ extension DBManagers {
     func onFetchingInOut(data: [QueryDocumentSnapshot]) {
         GlobalVariables.shared.inoutHistory.removeAll()
         for document in data {
-            guard let type = document["type"] as? String, let time = document["time"] as? String else { return }
-            GlobalVariables.shared.inoutHistory.append(InOutModel(documentId: document.documentID, type: type, time: time))
+            guard let uid = document["uid"] as? String, let type = document["type"] as? String, let time = document["time"] as? String else { return }
+            GlobalVariables.shared.inoutHistory.append(InOutModel(uid: uid, username: document["username"] as? String ?? "undefined", type: type, time: time))
         }
-        GlobalVariables.shared.inoutHistory = GlobalVariables.shared.inoutHistory.sorted(by: { $0.time > $1.time })
+        GlobalVariables.shared.inoutHistory = GlobalVariables.shared.inoutHistory.sorted(by: { $0.time < $1.time })
     }
 }
