@@ -95,6 +95,23 @@ class DBManagers {
             }
         }
     }
+    
+    func onGetCheckInOutHistoryAll(completion: @escaping requestLogCompletion) {
+        let db = Firestore.firestore()
+        db.collection("checkinout").getDocuments { snapshot, error in
+            if let error = error {
+                print("Error getting documents: \(error)")
+                completion(false, error.localizedDescription)
+            } else {
+                if let snapshot = snapshot {
+                    self.onFetchingInOut(data: snapshot.documents)
+                    completion(true, nil)
+                    return
+                }
+                completion(false, nil)
+            }
+        }
+    }
 }
 
 extension DBManagers {

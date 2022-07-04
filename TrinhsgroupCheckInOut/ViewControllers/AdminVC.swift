@@ -7,6 +7,7 @@
 
 import UIKit
 import SwiftCSVExport
+import MessageUI
 
 class AdminVC: UIViewController {
 
@@ -55,7 +56,15 @@ class AdminVC: UIViewController {
     }
     
     @IBAction func onPrintAll(_ sender: UIButton) {
-        
+        Utility.showHUD(in: view)
+        DBManagers.shared.onGetCheckInOutHistoryAll { success, log in
+            if success {
+                self.onPrintData()
+            } else {
+                self.view.makeToast("Get Check In & Out history failed. Please try again")
+            }
+            Utility.hideHUD(in: self.view)
+        }
     }
     
     @IBAction func onSelectMonth(_ sender: UIButton) {
@@ -152,19 +161,35 @@ extension AdminVC {
                 return
             }
             
-            print("File Path: \(filePath)")
-            self.readCSVPath(filePath)
+            self.onSendEmail(filePath: filePath)
         } else {
             print("Export Error: \(String(describing: output.message))")
         }
     }
     
-    func readCSVPath(_ filePath: String) {
-        let request = NSURLRequest(url:  URL(fileURLWithPath: filePath) )
-//        webview.loadRequest(request as URLRequest)
-        
-        // Read File and convert as CSV class object
-        _ = CSVExport.readCSVObject(filePath);
+    func onSendEmail(filePath: String) {
+        if MFMailComposeViewController.canSendMail() {
+            let mailComposer = MFMailComposeViewController()
+            mailComposer.setSubject("Check In Out TrinhsMelton Report")
+            mailComposer.setMessageBody("", isHTML: false)
+            mailComposer.setToRecipients(["longnh264@gmail.com"])
+            mailComposer.mailComposeDelegate = self
+            
+            let url = URL(fileURLWithPath: filePath)
+            
+            do {
+            let attachmentData = try Data(contentsOf: url)
+                mailComposer.addAttachmentData(attachmentData, mimeType: "text/csv", fileName: "CSV")
+                mailComposer.mailComposeDelegate = self
+                self.present(mailComposer, animated: true
+                    , completion: nil)
+            } catch let error {
+                print("We have encountered error \(error.localizedDescription)")
+            }
+            
+        } else {
+            print("Email is not configured in settings app or we are not able to send an email")
+        }
     }
 }
 
@@ -189,5 +214,13 @@ extension AdminVC: DropDownUIViewDelegate {
         default:
             break
         }
+    }
+}
+
+extension AdminVC: MFMailComposeViewControllerDelegate {
+    func mailComposeController(_ controller: MFMailComposeViewController,
+                                       didFinishWith result: MFMailComposeResult,
+                                       error: Swift.Error?) {
+        controller.dismiss(animated: true, completion: nil)
     }
 }
